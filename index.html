@@ -1,0 +1,56 @@
+<?php
+require_once('./config/Controller/Connect.php');
+require_once('./config/Controller/Connect2.php');
+$select = new SelectData();
+$select2 = new SelectData2();
+?>
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+			<meta charset="UTF-8">
+			<title>Lecture-sortable</title>
+			<link href="css/style.css" rel="stylesheet">
+			<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+			<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+			<script src="js/sort.js"></script>
+			
+	</head>
+	<body>
+		<div id="wrapper">
+
+			<div id="input_form">
+				<form action="./function/insert.php" method="POST">
+				  <input type="text" name="inputName"  placeholder="新メンバー名を入力">
+				  <?php
+				  $sql = 'SELECT * FROM sortable';
+				  $result = $select2->select($sql);
+				  
+				  foreach ($result as $val) {
+					$checked = ($val['id'] == 1) ? ' checked="checked"' : ''; //男性にチェックを入れる
+					echo '  <input type="radio" name="inputSex" value="'.$val['id'].'"' . $checked . '>'.$val['gender'].PHP_EOL;
+				  }
+				  ?>
+				  <input type="submit" value="登録">
+				</form>
+			  </div>
+
+			<div id="drag-area">
+			<?php
+			$sql = 'SELECT t1.*,t2.gender 
+			FROM lecture_sortable.sortable AS t1
+			LEFT JOIN genders.sortable AS t2
+			ON t1.gender_id=t2.id';
+
+			$stmt = $select->select($sql);
+
+			foreach ($stmt as $result){		
+				echo '  <div class="drag gender'.$result['gender_id'].'" data-num="'.$result['id'].'" style="left:'.$result['left_x'].'px; top:'.$result['top_y'].'px;">'.PHP_EOL;
+				echo '  <p><span class="name">'.$result['id'].' '.$result['name'].'('.$result['gender'].')</span></p>'.PHP_EOL;
+				echo '  </div>'.PHP_EOL;
+			}
+			?>
+			</div>
+
+		</div>
+	</body>
+</html>
